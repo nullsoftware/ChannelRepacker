@@ -1,0 +1,18 @@
+﻿<Application
+    x:Class="NullSoftware.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:NullSoftware"
+    xmlns:cv="clr-namespace:NullSoftware.Converters"
+    StartupUri="MainWindow.xaml"
+    Startup="Application_Startup">
+    <Application.Resources>
+        <ResourceDictionary>
+            <cv:BooleanToBitmapScalingModeConverter x:Key="BooleanToBitmapScalingModeConverter" />
+            <cv:BooleanToStretchConverter x:Key="BooleanToStretchConverter" />
+            <cv:BooleanToVerticalAlignmentConverter x:Key="BooleanToVerticalAlignmentConverter" />
+            <cv:BooleanToHorizontalAlignmentConverter x:Key="BooleanToHorizontalAlignmentConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

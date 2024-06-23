@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>mainicon.ico</ApplicationIcon>
+    <RootNamespace>NullSoftware</RootNamespace>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="mainicon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NodeNetwork" Version="6.0.0" />
+    <PackageReference Include="NodeNetworkToolkit" Version="6.0.0" />
+    <PackageReference Include="UToolKit" Version="1.1.1" />
+  </ItemGroup>
+
+</Project>

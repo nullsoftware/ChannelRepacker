@@ -1,0 +1,102 @@
+﻿<Window
+    x:Class="NullSoftware.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:NullSoftware"
+    xmlns:nodenetwork="clr-namespace:NodeNetwork.Views;assembly=NodeNetwork"
+    xmlns:vm="clr-namespace:NullSoftware.ViewModels"
+    xmlns:views="clr-namespace:NullSoftware.Views"
+    xmlns:cv="clr-namespace:NullSoftware.Converters"
+    mc:Ignorable="d"
+    Title="Channel Repack"
+    ResizeMode="CanResizeWithGrip"
+    TextOptions.TextFormattingMode="Display"
+    Height="500"
+    Width="800">
+    <Window.DataContext>
+        <vm:MainViewModel />
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Menu Grid.Row="0">
+            <MenuItem Header="_File">
+                <MenuItem
+                    Header="_Open"
+                    Command="{Binding OpenFileCommand}" />
+                <MenuItem
+                    Header="_Save"
+                    Command="{Binding SafeFileCommand}" />
+                <Separator />
+                <MenuItem
+                    Header="E_xit"
+                    Command="{Binding CloseCommand}" />
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem
+                    Header="Inverse Channel"
+                    Command="{Binding InverseChannelCommand}" />
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem
+                    Header="Antialiasing"
+                    IsCheckable="True"
+                    IsChecked="{Binding IsAntialiasingEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <MenuItem
+                    Header="Stretch"
+                    IsCheckable="True"
+                    IsChecked="{Binding IsStretchEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </MenuItem>
+        </Menu>
+
+        <StatusBar Grid.Row="2">
+            <StatusBarItem Content="StatusBar" />
+        </StatusBar>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="300" />
+            </Grid.ColumnDefinitions>
+
+            <nodenetwork:NetworkView
+                Grid.Column="0"
+                TextOptions.TextFormattingMode="Ideal"
+                ViewModel="{Binding NetworkViewModel}"
+                PreviewDragOver="NetworkView_PreviewDragOver"
+                PreviewDragEnter="NetworkView_PreviewDragEnter"
+                PreviewDrop="NetworkView_PreviewDrop" />
+            <TabControl
+                Grid.Column="2"
+                TabStripPlacement="Bottom">
+                <TabItem Header="Preview">
+                    <views:ImageDisplay Source="{Binding OutputTexture.Result}" />
+                </TabItem>
+
+                <TabItem Header="RGB">
+                    <views:ImageDisplay Source="{Binding OutputTexture.BaseColor}" />
+                </TabItem>
+
+                <TabItem Header="Alpha">
+                    <views:ImageDisplay Source="{Binding OutputTexture.AlphaMask}" />
+                </TabItem>
+
+            </TabControl>
+
+            <GridSplitter
+                Grid.Column="1"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                ResizeBehavior="PreviousAndNext"
+                ResizeDirection="Columns" />
+        </Grid>
+    </Grid>
+</Window>
