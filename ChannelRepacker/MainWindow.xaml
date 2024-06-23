@@ -68,6 +68,13 @@
                     </Hyperlink>
                 </TextBlock>
             </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock>
+                    <Run Text="Version:"/>
+                    <Run Text="{Binding Source={x:Static Application.Current}, Path=ApplicationVersion, Mode=OneTime}"/>
+                </TextBlock>
+            </StatusBarItem>
         </StatusBar>
 
         <Grid Grid.Row="1">
