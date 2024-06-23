@@ -9,6 +9,7 @@
     xmlns:vm="clr-namespace:NullSoftware.ViewModels"
     xmlns:views="clr-namespace:NullSoftware.Views"
     xmlns:cv="clr-namespace:NullSoftware.Converters"
+    xmlns:tk="https://github.com/nullsoftware/UToolKit"
     mc:Ignorable="d"
     Title="Channel Repack"
     ResizeMode="CanResizeWithGrip"
@@ -57,7 +58,16 @@
         </Menu>
 
         <StatusBar Grid.Row="2">
-            <StatusBarItem Content="StatusBar" />
+            <StatusBarItem>
+                <TextBlock>
+                    <Run Text="Author:"/>
+                    <Hyperlink
+                        NavigateUri="https://github.com/nullsoftware/ChannelRepacker"
+                        tk:HyperlinkExtensions.IsExternal="True">
+                        <Run Text="Null Software" />
+                    </Hyperlink>
+                </TextBlock>
+            </StatusBarItem>
         </StatusBar>
 
         <Grid Grid.Row="1">
