@@ -6,5 +6,5 @@ Tool for repacking image channels via node system.
 ## How to install
 This tool can be installed via installer or manually by unpacking archive into any folder. 
 
-* [Download Installer](https://github.com/nullsoftware/ChannelRepacker/releases/download/v1.0.0/CR-Setup-1.0.exe)
-* [Download Archive](https://github.com/nullsoftware/ChannelRepacker/releases/download/v1.0.0/ChannelRepacker-1.0.zip)
+* [Download Installer](https://github.com/nullsoftware/ChannelRepacker/releases/download/v1.0.3/CR-Setup-1.0.3.exe)
+* [Download Archive](https://github.com/nullsoftware/ChannelRepacker/releases/download/v1.0.3/ChannelRepacker-1.0.3.zip)
