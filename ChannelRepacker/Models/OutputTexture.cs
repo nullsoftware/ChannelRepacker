@@ -23,6 +23,8 @@ namespace NullSoftware.Models
         public bool HasError { get; private set; }
         public string? ErrorMessage { get; private set; }
 
+        public bool HasAlpha { get; private set; }
+
         private bool _isLoading;
         public bool IsLoading
         {
@@ -104,6 +106,7 @@ namespace NullSoftware.Models
                     return;
                 }
 
+                HasAlpha = false;
                 for (int y = 0; y < height; y++)
                 {
                     for (int x = 0; x < width; x++)
@@ -116,6 +119,9 @@ namespace NullSoftware.Models
                         Buffer[i + 3] = aChannel.GetPixel(x, y);
 
                         AlphaMaskBuffer[y * width + x] = Buffer[i + 3];
+
+                        if (!HasAlpha && Buffer[i + 3] != byte.MaxValue)
+                            HasAlpha = true;
                     }
 
                     if (cancellationToken.IsCancellationRequested)

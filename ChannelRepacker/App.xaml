@@ -8,11 +8,10 @@
     Startup="Application_Startup">
     <Application.Resources>
         <ResourceDictionary>
-            <cv:BooleanToBitmapScalingModeConverter x:Key="BooleanToBitmapScalingModeConverter" />
-            <cv:BooleanToStretchConverter x:Key="BooleanToStretchConverter" />
-            <cv:BooleanToVerticalAlignmentConverter x:Key="BooleanToVerticalAlignmentConverter" />
-            <cv:BooleanToHorizontalAlignmentConverter x:Key="BooleanToHorizontalAlignmentConverter" />
-            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Assets/Converters/Common.xaml"/>
+                <ResourceDictionary Source="Assets/Themes/Generic.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

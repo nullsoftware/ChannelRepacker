@@ -12,16 +12,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Windows.Media;
 
 namespace NullSoftware.ViewModels
 {
-    public class MainViewModel : ObservableObject
+    public class MainViewModel : ViewModelBase
     {
         public NetworkViewModel NetworkViewModel { get; } = new NetworkViewModel();
         public OutputTexture OutputTexture { get; } = new OutputTexture();
 
         public IRefreshableCommand OpenFileCommand { get; }
-        public IRefreshableCommand SafeFileCommand { get; }
+        public IRefreshableCommand ExportFileCommand { get; }
         public IRefreshableCommand FileDropCommand { get; }
         public IRefreshableCommand CloseCommand { get; }
         public IRefreshableCommand InverseChannelCommand { get; }
@@ -45,10 +46,37 @@ namespace NullSoftware.ViewModels
             set => SetProperty(ref _isStretchEnabled, value);
         }
 
+        private ExportFormat _defaultExportFormat = ExportFormat.PNG;
+        public ExportFormat DefaultExportFormat
+        {
+            get => _defaultExportFormat;
+            set => SetProperty(ref _defaultExportFormat, value);
+        }
+
+        public ExportFormat[] ExportFormats { get; } = Enum.GetValues<ExportFormat>();
+
+
+        private AlphaChannelExport _selectedAlphaChannelMode = AlphaChannelExport.Auto;
+        public AlphaChannelExport SelectedAlphaChannelMode
+        {
+            get => _selectedAlphaChannelMode;
+            set => SetProperty(ref _selectedAlphaChannelMode, value);
+        }
+
+        public AlphaChannelExport[] AlphaChannelModes { get; } = Enum.GetValues<AlphaChannelExport>();
+
+
+        private int _qualityLevel = 100;
+        public int QualityLevel
+        {
+            get => _qualityLevel;
+            set => SetProperty(ref _qualityLevel, value);
+        }
+
         public MainViewModel()
         {
             OpenFileCommand = new RelayCommand(OpenFile);
-            SafeFileCommand = new RelayCommand(SaveFile, CanSaveFile);
+            ExportFileCommand = new RelayCommand(SaveFile, CanSaveFile);
             FileDropCommand = new RelayCommand<string[]>(FileDrop);
             CloseCommand = new RelayCommand(App.Current.MainWindow.Close);
             InverseChannelCommand = new RelayCommand(InverseChannel);
@@ -97,7 +125,12 @@ namespace NullSoftware.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Failed to open file '{Path.GetFileName(fileName)}': {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(
+                        App.Current.MainWindow, 
+                        $"Failed to open file '{Path.GetFileName(fileName)}': {ex.Message}", 
+                        "Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
                 }
             }
         }
@@ -128,13 +161,15 @@ namespace NullSoftware.ViewModels
         private void SaveFile()
         {
             SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Filter = "PNG File|*.png;|All Files|*.*";
+            dlg.Filter = "PNG File|*.png|JPEG File|*.jpg|BMP File|*.bmp|All Files|*.*";
             dlg.FileName = "texture";
+            dlg.FilterIndex = (int)DefaultExportFormat + 1;
             if (dlg.ShowDialog() == true)
             {
-                PngBitmapEncoder encoder = new PngBitmapEncoder();
+                DefaultExportFormat = dlg.FilterIndex != 4 ? (ExportFormat)(dlg.FilterIndex - 1) : DefaultExportFormat;
+                BitmapEncoder encoder = GetBitmapEncoder(DefaultExportFormat);
                 
-                encoder.Frames.Add(BitmapFrame.Create(OutputTexture.Result));
+                encoder.Frames.Add(BitmapFrame.Create(ExportBitmapSource(OutputTexture, SelectedAlphaChannelMode)));
                 using (Stream stream = File.Create(dlg.FileName))
                 {
                     encoder.Save(stream);
@@ -142,9 +177,33 @@ namespace NullSoftware.ViewModels
             }
         }
 
+        private BitmapEncoder GetBitmapEncoder(ExportFormat exportFormat)
+        {
+            switch (exportFormat)
+            {
+                case ExportFormat.PNG: return new PngBitmapEncoder();
+                case ExportFormat.JPEG: return new JpegBitmapEncoder() { QualityLevel = QualityLevel };
+                case ExportFormat.BMP: return new BmpBitmapEncoder();
+
+                default: throw new NotSupportedException("Current export format is not supported.");
+            }
+        }
+
+        private BitmapSource ExportBitmapSource(OutputTexture texture, AlphaChannelExport alphaChannelMode)
+        {
+            BitmapSource result = texture.Result!;
+
+            if ((alphaChannelMode == AlphaChannelExport.Auto && !texture.HasAlpha) || alphaChannelMode == AlphaChannelExport.Exclude)
+            {
+                result = new FormatConvertedBitmap(result, PixelFormats.Bgr24, null, 0);
+            }
+
+            return result;
+        }
+
         private void InverseChannel()
         {
-            NetworkViewModel.Nodes.Add(new Nodes.InverseNode() { Position = new System.Windows.Point(50, 100) });
+            NetworkViewModel.Nodes.Add(new Nodes.InverseNode() { Position = new Point(50, 100) });
         }
 
     }

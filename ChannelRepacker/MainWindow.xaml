@@ -5,6 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:NullSoftware"
+    xmlns:model="clr-namespace:NullSoftware.Models"
+    xmlns:ctrl="clr-namespace:NullSoftware.Controls"
     xmlns:nodenetwork="clr-namespace:NodeNetwork.Views;assembly=NodeNetwork"
     xmlns:vm="clr-namespace:NullSoftware.ViewModels"
     xmlns:views="clr-namespace:NullSoftware.Views"
@@ -33,8 +35,8 @@
                     Header="_Open"
                     Command="{Binding OpenFileCommand}" />
                 <MenuItem
-                    Header="_Save"
-                    Command="{Binding SafeFileCommand}" />
+                    Header="_Export"
+                    Command="{Binding ExportFileCommand}" />
                 <Separator />
                 <MenuItem
                     Header="E_xit"
@@ -60,7 +62,7 @@
         <StatusBar Grid.Row="2">
             <StatusBarItem>
                 <TextBlock>
-                    <Run Text="Author:"/>
+                    <Run Text="Author:" />
                     <Hyperlink
                         NavigateUri="https://github.com/nullsoftware/ChannelRepacker"
                         tk:HyperlinkExtensions.IsExternal="True">
@@ -68,11 +70,11 @@
                     </Hyperlink>
                 </TextBlock>
             </StatusBarItem>
-            <Separator/>
+            <Separator />
             <StatusBarItem>
                 <TextBlock>
-                    <Run Text="Version:"/>
-                    <Run Text="{Binding Source={x:Static Application.Current}, Path=ApplicationVersion, Mode=OneTime}"/>
+                    <Run Text="Version:" />
+                    <Run Text="{Binding Source={x:Static Application.Current}, Path=ApplicationVersion, Mode=OneTime}" />
                 </TextBlock>
             </StatusBarItem>
         </StatusBar>
@@ -81,7 +83,9 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="300" />
+                <ColumnDefinition
+                    Width="300"
+                    MaxWidth="600" />
             </Grid.ColumnDefinitions>
 
             <nodenetwork:NetworkView
@@ -91,22 +95,129 @@
                 PreviewDragOver="NetworkView_PreviewDragOver"
                 PreviewDragEnter="NetworkView_PreviewDragEnter"
                 PreviewDrop="NetworkView_PreviewDrop" />
-            <TabControl
-                Grid.Column="2"
-                TabStripPlacement="Bottom">
-                <TabItem Header="Preview">
-                    <views:ImageDisplay Source="{Binding OutputTexture.Result}" />
-                </TabItem>
 
-                <TabItem Header="RGB">
-                    <views:ImageDisplay Source="{Binding OutputTexture.BaseColor}" />
-                </TabItem>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
 
-                <TabItem Header="Alpha">
-                    <views:ImageDisplay Source="{Binding OutputTexture.AlphaMask}" />
-                </TabItem>
+                <GroupBox
+                    Grid.Row="0"
+                    Margin="10,10"
+                    Padding="6"
+                    MaxWidth="300"
+                    Header="Export Options">
+                    <ctrl:UStackPanel
+                        Spacing="10"
+                        Grid.IsSharedSizeScope="True">
+                        <HeaderedContentControl Style="{StaticResource SettingItem}">
+                            <HeaderedContentControl.Header>
+                                <Label
+                                    Content="Default Format:"
+                                    Cursor="Help">
+                                    <Label.ToolTip>
+                                        <TextBlock>
+                                            <Run Text="Default file export format." />
+                                            <LineBreak />
+                                            <Run Text="Will be overwritten by selected format in save dialog." />
+                                        </TextBlock>
+                                    </Label.ToolTip>
+                                </Label>
+                            </HeaderedContentControl.Header>
 
-            </TabControl>
+                            <ComboBox
+                                ItemsSource="{Binding ExportFormats, Mode=OneTime}"
+                                SelectedItem="{Binding DefaultExportFormat, Mode=TwoWay}" />
+                        </HeaderedContentControl>
+
+                        <HeaderedContentControl Style="{StaticResource SettingItem}">
+                            <HeaderedContentControl.Header>
+                                <Label
+                                    Content="Alpha Channel:"
+                                    Cursor="Help">
+                                    <Label.ToolTip>
+                                        <TextBlock>
+                                            <Run Text="Alpha channel export mode." />
+                                            <LineBreak />
+                                            <LineBreak />
+                                            <Bold>
+                                                <Run Text="Auto" />
+                                            </Bold>
+                                            <Run Text="- automatically detect if image has alpha." />
+                                            <LineBreak />
+                                            <Bold>
+                                                <Run Text="Include" />
+                                            </Bold>
+                                            <Run Text="- always include alpha channel." />
+                                            <LineBreak />
+                                            <Bold>
+                                                <Run Text="Exclude" />
+                                            </Bold>
+                                            <Run Text="- always exclude alpha channel." />
+                                            <LineBreak />
+                                            <LineBreak />
+                                            <Bold>
+                                                <Run Text="* This option will not affect preview." />
+                                            </Bold>
+                                        </TextBlock>
+                                    </Label.ToolTip>
+                                </Label>
+                            </HeaderedContentControl.Header>
+
+                            <ComboBox
+                                ItemsSource="{Binding AlphaChannelModes, Mode=OneTime}"
+                                SelectedItem="{Binding SelectedAlphaChannelMode, Mode=TwoWay}" />
+                        </HeaderedContentControl>
+                        <HeaderedContentControl Style="{StaticResource SettingItem}">
+                            <HeaderedContentControl.Header>
+                                <Label
+                                    Content="Quality Level:"
+                                    Cursor="Help">
+                                    <Label.ToolTip>
+                                        <TextBlock>
+                                            <Run Text="The quality level of the JPEG image." />
+                                            <LineBreak />
+                                            <Run Text="The value range is 1 (lowest quality) to 100 (highest quality) inclusive." />
+                                            <LineBreak />
+                                            <LineBreak />
+                                            <Bold>
+                                                <Run Text="Will take effect only if chosen JPEG format." />
+                                            </Bold>
+                                        </TextBlock>
+                                    </Label.ToolTip>
+                                </Label>
+                            </HeaderedContentControl.Header>
+
+                            <Slider
+                                Minimum="1"
+                                Maximum="100"
+                                Value="{Binding QualityLevel, Mode=TwoWay}"
+                                AutoToolTipPlacement="BottomRight"
+                                IsEnabled="{Binding DefaultExportFormat, Mode=OneWay, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static model:ExportFormat.JPEG}}" />
+                        </HeaderedContentControl>
+                    </ctrl:UStackPanel>
+
+                </GroupBox>
+
+
+                <TabControl
+                    Grid.Row="1"
+                    TabStripPlacement="Bottom">
+                    <TabItem Header="Preview">
+                        <views:ImageDisplay Source="{Binding OutputTexture.Result}" />
+                    </TabItem>
+
+                    <TabItem Header="RGB">
+                        <views:ImageDisplay Source="{Binding OutputTexture.BaseColor}" />
+                    </TabItem>
+
+                    <TabItem Header="Alpha">
+                        <views:ImageDisplay Source="{Binding OutputTexture.AlphaMask}" />
+                    </TabItem>
+                </TabControl>
+
+            </Grid>
 
             <GridSplitter
                 Grid.Column="1"
