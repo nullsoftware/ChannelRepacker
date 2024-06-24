@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Channel Repacker"
-#define MyAppVersion "1.0"
+#define MyAppVersion "1.0.3"
 #define MyAppPublisher "Null Software"
 #define MyAppURL "https://github.com/nullsoftware/ChannelRepacker"
 #define MyAppExeName "ChannelRepacker.exe"
